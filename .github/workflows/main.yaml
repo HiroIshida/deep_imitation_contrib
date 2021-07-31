@@ -1,0 +1,44 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v2
+
+            - name: Setup python
+              uses: actions/setup-python@v2
+              with:
+                  python-version: '3.7'
+
+            - name: pip install deep_imitation
+              run: |
+                  git clone https://github.com/HiroIshida/deep_imitation.git
+                  cd deep_imitation
+                  pip3 install .
+
+            - name: setup contrib module
+              run: |
+                  ./setup.sh
+
+            - name: Test pipeline ball simulation
+              run: |
+                  cd deep_imitation
+                  ./testing/ball_simulation_quick.sh
+            - name: Test pipeline kuka reaching image only
+              run: |
+                  cd deep_imitation
+                  ./testing/kuka_reaching_quick.sh
+            - name: Test pipeline kuka reaching with action
+              run: |
+                  cd deep_imitation
+                  ./testing/kuka_reaching_action_quick.sh
